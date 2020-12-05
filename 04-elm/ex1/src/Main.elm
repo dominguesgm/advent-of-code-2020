@@ -1104,13 +1104,10 @@ mapValid input = map (map (split ":")) (passportsArray input)
 
 -- end
 
-shortHeadAndRest list = 
-  case list of
-    h::r -> (h, r)
-    [] -> ("none", [])
 
-
-extractKey field = first (shortHeadAndRest (split ":" field))
+extractKey field = case (head (split ":" field)) of
+  Just value -> value
+  Nothing -> ""
 
 getPassportFields passport = map extractKey passport
 

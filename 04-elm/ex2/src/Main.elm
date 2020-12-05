@@ -5,6 +5,8 @@ import Html exposing (Html, div, text)
 import String exposing (split)
 import List exposing (foldl, append, map, member, head, tail)
 import Tuple exposing (first, second)
+import Dict exposing (Dict, empty, insert, get)
+import Regex
 
 data = """hgt:159cm
 pid:561068005 eyr:2025 iyr:2017 cid:139 ecl:blu hcl:#ceb3a1
@@ -1098,33 +1100,107 @@ passportsArray input = second (headAndRest
   (foldl lineValidation [[]] (split "\n" input)))
 
 
--- temporary
+colorRegex =
+  Maybe.withDefault Regex.never <|
+      Regex.fromString "^#[0-9a-f]{6}$"
 
-mapValid input = map (map (split ":")) (passportsArray input)
+heightCmRegex = 
+  Maybe.withDefault Regex.never <|
+      Regex.fromString "cm$"
 
--- end
+heightInRegex = 
+  Maybe.withDefault Regex.never <|
+      Regex.fromString "in$"
 
-shortHeadAndRest list = 
-  case list of
-    h::r -> (h, r)
-    [] -> ("none", [])
+passportRegex =
+  Maybe.withDefault Regex.never <|
+      Regex.fromString "^[0-9]{9}$"
 
+extractKey : String -> Dict String String -> Dict String String
+extractKey field acc = case (split ":" field) of
+  key::value -> case (head value) of
+     Just val -> (insert key val acc)
+     Nothing -> acc
+  [] -> acc
 
-extractKey field = first (shortHeadAndRest (split ":" field))
-
-getPassportFields passport = map extractKey passport
+getPassportFields passport = foldl extractKey Dict.empty passport
 
 getFieldsPerPassport input = map getPassportFields (passportsArray input)
 
+validateBYR byrVal =
+  let convertedVal = String.toInt (case byrVal of
+          Just val -> val
+          Nothing -> "0") in
+      case convertedVal of
+        Just val -> val >= 1920 && val <= 2002
+        Nothing -> False
 
+validateIYR iyrVal =
+  let convertedVal = String.toInt (case iyrVal of
+        Just val -> val
+        Nothing -> "0") in
+    case convertedVal of
+      Just val -> val >= 2010 && val <= 2020
+      Nothing -> False
+
+validateEYR eyrVal =
+  let convertedVal = String.toInt (case eyrVal of
+        Just val -> val
+        Nothing -> "0") in
+    case convertedVal of
+      Just val -> val >= 2020 && val <= 2030
+      Nothing -> False
+
+validateHGT hgtVal =
+  case hgtVal of
+    Just val ->
+      (let numb = String.toInt (String.dropRight 2 val) in
+        case numb of
+          Just fullNumb ->
+            if (Regex.contains heightCmRegex val)
+            then
+              fullNumb >= 150 && fullNumb <= 193
+            else
+              if (Regex.contains heightInRegex val)
+              then
+                fullNumb >= 59 && fullNumb <= 76
+              else
+                False
+          Nothing -> False
+      )
+    Nothing -> False
+
+validateHCL hclVal = 
+  case hclVal of
+    Just val -> Regex.contains colorRegex val
+    Nothing -> False
+
+validateECL eclVal =
+  case eclVal of
+    Just "amb" -> True
+    Just "blu" -> True
+    Just "brn" -> True
+    Just "gry" -> True
+    Just "grn" -> True
+    Just "hzl" -> True
+    Just "oth" -> True
+    Just _ -> False
+    Nothing -> False
+
+validatePID getVal =
+  let pidVal = getVal in case pidVal of
+    Just val -> Regex.contains passportRegex val
+    Nothing -> False
+
+hasAllFields : Dict String String -> Bool
 hasAllFields passport =
-  (member "byr" passport) && 
-  (member "iyr" passport) && 
-  (member "eyr" passport) && 
-  (member "hgt" passport) && 
-  (member "hcl" passport) && 
-  (member "ecl" passport) && 
-  (member "pid" passport) 
+  (validateBYR (get "byr" passport)) &&
+  (validateIYR (get "iyr" passport)) &&
+  (validateEYR (get "eyr" passport)) &&
+  (validateHGT (get "hgt" passport)) && 
+  (validateHCL (get "hcl" passport)) &&
+  (validateECL (get "ecl" passport)) &&
+  (validatePID (get "pid" passport))
 
 getValidPassports input = let existingFields = getFieldsPerPassport input in
   map hasAllFields existingFields
