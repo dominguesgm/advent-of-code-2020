@@ -76,8 +76,3 @@ file linesDo: [ :c |
 file close.
 
 (((bagsContaining at: 'shiny gold') fitsIn) size) displayNl.
-((bagsContaining at: 'shiny gold') fitsIn) displayNl.
-
-
-"MISSING GOING THROUGH THE DICTIONARY, FIND THE BAG, GO THROUGH SET AND REPEAT THIS PROCESS FOR EVERY ITEM IN SET, PLACING RESULTS IN A SET AND ONLY THEN COUNTING ELEMENTS IN THE SET"
-
