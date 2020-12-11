@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "+NrnGE0qAUac/HiAHGohZUt/MJUL81abGdXrSgkw/N98DCpu9PTQB9tHu6bGw+21Nnbc+aPOAJsoSe/4iRI7AQ==",
+  "success": true,
+  "projectFilePath": "/home/gil/homebrew/repos/advent-of-code-2020/09-fsharp/ex2/ex2.fsproj",
+  "expectedPackageFiles": [
+    "/home/gil/.nuget/packages/fsharp.core/5.0.0/fsharp.core.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
