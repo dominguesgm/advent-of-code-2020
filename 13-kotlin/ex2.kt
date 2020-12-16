@@ -1,16 +1,17 @@
 import java.io.File
 import kotlin.math.ceil
 import kotlin.math.abs
+import java.math.BigInteger
 
-fun extendedEuclideanAlg (a: Long, b: Long): Pair<Long, Long> {
+fun extendedEuclideanAlg (a: BigInteger, b: BigInteger): Pair<BigInteger, BigInteger> {
     var old_r = a
     var r = b
-    var old_s = 1.toLong()
-    var s = 0.toLong()
-    var old_t = 0.toLong()
-    var t = 1.toLong()
+    var old_s = 1.toBigInteger()
+    var s = 0.toBigInteger()
+    var old_t = 0.toBigInteger()
+    var t = 1.toBigInteger()
 
-    while(r != 0.toLong()) {
+    while(r != 0.toBigInteger()) {
         var quotient = old_r / r
 
         var tempR = r
@@ -29,28 +30,33 @@ fun extendedEuclideanAlg (a: Long, b: Long): Pair<Long, Long> {
     return Pair(old_s, old_t)
 }
 
-fun normalizeVal(value: Long, multiple: Long): Long {
+fun normalizeVal(value: BigInteger, multiple: BigInteger): BigInteger {
     var newVal = value
 
-    println("Value to normalize: $value")
-    println("Multiple to normalize with: $multiple")
+    var approxDivisor = value / multiple
 
-    while(newVal < 0.toLong() || newVal > multiple) {
-        if(newVal < 0.toLong()) {
-            newVal = newVal + multiple
+    if(newVal >= 0.toBigInteger() && newVal <= multiple) {
+        return newVal
+    }
+
+    newVal = value - approxDivisor * multiple
+
+    while(newVal < 0.toBigInteger() || newVal > multiple) {
+        if(newVal < 0.toBigInteger()) {
+            approxDivisor = approxDivisor - 1.toBigInteger()
+            newVal = value - approxDivisor * multiple
         }
 
         if(newVal > multiple) {
-            newVal = newVal - multiple
+            approxDivisor = approxDivisor + 1.toBigInteger()
+            newVal = value - approxDivisor * multiple
         }
     }
-
-    println("normalized value: $newVal")
 
     return newVal
 }
 
-fun existanceProof(a1: Long, m1: Long, n1: Long, a2: Long, m2: Long, n2: Long): Long {
+fun existenceProof(a1: BigInteger, m1: BigInteger, n1: BigInteger, a2: BigInteger, m2: BigInteger, n2: BigInteger): BigInteger {
     return (a2 * m1 * n1) + (a1 * m2 * n2)
 }
 
@@ -58,50 +64,40 @@ fun main () {
     var fileName = "./data.txt"
     var lines = File(fileName).useLines { it.toList() }
 
-    var buses = lines[1].split(",").map { if(it == "x") { -1.toLong() } else { it.toLong() }}
+    var buses = lines[1].split(",").map { if(it == "x") { -1.toBigInteger() } else { it.toBigInteger() }}
 
     var accMultiple = buses[0]
 
-    var lastRemainder = 0.toLong()
+    var lastRemainder = 0.toBigInteger()
 
     for(i in 1..buses.size-1) {
-        if(buses[i] == -1.toLong()) {
+        if(buses[i] == -1.toBigInteger()) {
             continue
         }
 
-        var bus = buses[i]
-
-        println("For item $bus, of index $i")
-
         var bernoutIdent = extendedEuclideanAlg(accMultiple, buses[i])
 
-        println("Bernout input: $accMultiple, $bus")
+        var remainder = buses[i] - (i.toBigInteger() % buses[i])
 
-        println("Bernout result: $bernoutIdent")
-
-        var remainder = buses[i] - (i % buses[i])
-
-        var existance = existanceProof(lastRemainder, bernoutIdent.first, accMultiple, remainder, bernoutIdent.second, buses[i])
-
-        println("remainder: $remainder")
+        var existence = existenceProof(lastRemainder, bernoutIdent.first, accMultiple, remainder, bernoutIdent.second, buses[i])
 
         accMultiple = accMultiple * buses[i]
 
-        lastRemainder = normalizeVal(existance, accMultiple)
-
-        println("Step Result: $lastRemainder")
+        lastRemainder = normalizeVal(existence, accMultiple)
     }
 
     println("Result: $lastRemainder")
 
+
+    // This block validates the result to avoid checking in AoC and increasing timeout
     var correct = true
 
     for(i in 0..buses.size-1) {
-        if(buses[i] == -1.toLong()) {
+        if(buses[i] == -1.toBigInteger()) {
             continue
         }
 
-        if((lastRemainder + i.toLong()) % buses[i] == 0.toLong()) {
+        if((lastRemainder + i.toBigInteger()) % buses[i] == 0.toBigInteger()) {
             continue
         } else {
             correct = false
