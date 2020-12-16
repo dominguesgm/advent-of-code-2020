@@ -26,15 +26,14 @@ fun extendedEuclideanAlg (a: Long, b: Long): Pair<Long, Long> {
         old_t = tempT
     }
 
-    println("Bezouts coefficients: m1: $old_s, m2: $old_t")
-    println("Greatest common divisor: $old_r")
-    println("quotients by the gcd: $t, $s")
-
     return Pair(old_s, old_t)
 }
 
 fun normalizeVal(value: Long, multiple: Long): Long {
     var newVal = value
+
+    println("Value to normalize: $value")
+    println("Multiple to normalize with: $multiple")
 
     while(newVal < 0.toLong() || newVal > multiple) {
         if(newVal < 0.toLong()) {
@@ -45,6 +44,8 @@ fun normalizeVal(value: Long, multiple: Long): Long {
             newVal = newVal - multiple
         }
     }
+
+    println("normalized value: $newVal")
 
     return newVal
 }
@@ -74,20 +75,40 @@ fun main () {
 
         var bernoutIdent = extendedEuclideanAlg(accMultiple, buses[i])
 
-        println("bernout ident: $bernoutIdent")
+        println("Bernout input: $accMultiple, $bus")
 
-        var existance = existanceProof(lastRemainder, bernoutIdent.first, accMultiple, abs((buses[i] - i) % buses[i]), bernoutIdent.second, buses[i])
+        println("Bernout result: $bernoutIdent")
 
-        println("existance: $existance")
+        var remainder = buses[i] - (i % buses[i])
+
+        var existance = existanceProof(lastRemainder, bernoutIdent.first, accMultiple, remainder, bernoutIdent.second, buses[i])
+
+        println("remainder: $remainder")
 
         accMultiple = accMultiple * buses[i]
 
-        println("acc Multiple: $accMultiple")
-
         lastRemainder = normalizeVal(existance, accMultiple)
 
-        println("last remainder: $lastRemainder")
+        println("Step Result: $lastRemainder")
     }
 
     println("Result: $lastRemainder")
+
+    var correct = true
+
+    for(i in 0..buses.size-1) {
+        if(buses[i] == -1.toLong()) {
+            continue
+        }
+
+        if((lastRemainder + i.toLong()) % buses[i] == 0.toLong()) {
+            continue
+        } else {
+            correct = false
+            break
+        }
+    }
+
+
+    println("Correct result: $correct")
 }
