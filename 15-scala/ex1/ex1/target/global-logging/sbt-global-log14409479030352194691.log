@@ -1,0 +1,5 @@
+[debug] jsonRpcNotify: JsonRpcNotificationMessage(2.0, shutdown, [true,null])
+[debug] > Exec(__stopWatch network-2, None, None)
+[debug] > Exec(shell, None, None)
+[debug] Forcing garbage collection...
+[info] shutting down sbt server

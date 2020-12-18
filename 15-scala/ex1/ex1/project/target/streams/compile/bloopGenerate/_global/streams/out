@@ -1,0 +1,4 @@
+[0m[[0m[0mdebug[0m] [0m[0m[ex1-build] Classpath dependencies List()[0m
+[0m[[0m[0mdebug[0m] [0m[0m[ex1-build] Dependencies from configurations List()[0m
+[0m[[0m[0mdebug[0m] [0m[0mBloop wrote the configuration of project 'ex1-build' to '/home/gil/homebrew/repos/advent-of-code-2020/15-scala/ex1/ex1/project/.bloop/ex1-build.json'[0m
+[0m[[0m[32msuccess[0m] [0m[0mGenerated .bloop/ex1-build.json[0m

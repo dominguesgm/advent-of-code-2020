@@ -1,0 +1,167 @@
+{
+    "version": "1.4.0",
+    "project": {
+        "name": "ex1-test",
+        "directory": "/home/gil/homebrew/repos/advent-of-code-2020/15-scala/ex1/ex1",
+        "workspaceDir": "/home/gil/homebrew/repos/advent-of-code-2020/15-scala/ex1/ex1",
+        "sources": [
+            "/home/gil/homebrew/repos/advent-of-code-2020/15-scala/ex1/ex1/src/test/scala",
+            "/home/gil/homebrew/repos/advent-of-code-2020/15-scala/ex1/ex1/src/test/scala-2.13",
+            "/home/gil/homebrew/repos/advent-of-code-2020/15-scala/ex1/ex1/src/test/scala-2",
+            "/home/gil/homebrew/repos/advent-of-code-2020/15-scala/ex1/ex1/src/test/java",
+            "/home/gil/homebrew/repos/advent-of-code-2020/15-scala/ex1/ex1/target/scala-2.13/src_managed/test"
+        ],
+        "dependencies": [
+            "ex1"
+        ],
+        "classpath": [
+            "/home/gil/homebrew/repos/advent-of-code-2020/15-scala/ex1/ex1/.bloop/ex1/scala-2.13/classes",
+            "/home/gil/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.3/scala-library-2.13.3.jar",
+            "/home/gil/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/modules/scala-parser-combinators_2.13/1.1.2/scala-parser-combinators_2.13-1.1.2.jar"
+        ],
+        "out": "/home/gil/homebrew/repos/advent-of-code-2020/15-scala/ex1/ex1/.bloop/ex1",
+        "classesDir": "/home/gil/homebrew/repos/advent-of-code-2020/15-scala/ex1/ex1/.bloop/ex1/scala-2.13/test-classes",
+        "resources": [
+            "/home/gil/homebrew/repos/advent-of-code-2020/15-scala/ex1/ex1/src/test/resources",
+            "/home/gil/homebrew/repos/advent-of-code-2020/15-scala/ex1/ex1/target/scala-2.13/resource_managed/test"
+        ],
+        "scala": {
+            "organization": "org.scala-lang",
+            "name": "scala-compiler",
+            "version": "2.13.3",
+            "options": [
+                
+            ],
+            "jars": [
+                "/home/gil/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-compiler/2.13.3/scala-compiler-2.13.3.jar",
+                "/home/gil/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.3/scala-library-2.13.3.jar",
+                "/home/gil/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.13.3/scala-reflect-2.13.3.jar",
+                "/home/gil/.cache/coursier/v1/https/repo1.maven.org/maven2/org/jline/jline/3.15.0/jline-3.15.0.jar",
+                "/home/gil/.cache/coursier/v1/https/repo1.maven.org/maven2/net/java/dev/jna/jna/5.3.1/jna-5.3.1.jar"
+            ],
+            "analysis": "/home/gil/homebrew/repos/advent-of-code-2020/15-scala/ex1/ex1/target/streams/test/bloopAnalysisOut/_global/streams/inc_compile_2.13.zip",
+            "setup": {
+                "order": "mixed",
+                "addLibraryToBootClasspath": true,
+                "addCompilerToClasspath": false,
+                "addExtraJarsToClasspath": false,
+                "manageBootClasspath": true,
+                "filterLibraryFromClasspath": true
+            }
+        },
+        "java": {
+            "options": [
+                
+            ]
+        },
+        "test": {
+            "frameworks": [
+                {
+                    "names": [
+                        "org.scalacheck.ScalaCheckFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "org.specs2.runner.Specs2Framework",
+                        "org.specs2.runner.SpecsFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "org.specs.runner.SpecsFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "org.scalatest.tools.Framework",
+                        "org.scalatest.tools.ScalaTestFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "com.novocode.junit.JUnitFramework"
+                    ]
+                }
+            ],
+            "options": {
+                "excludes": [
+                    
+                ],
+                "arguments": [
+                    
+                ]
+            }
+        },
+        "platform": {
+            "name": "jvm",
+            "config": {
+                "home": "/usr/lib/jvm/java-11-openjdk-amd64",
+                "options": [
+                    "-Duser.dir=/home/gil/homebrew/repos/advent-of-code-2020/15-scala/ex1/ex1"
+                ]
+            },
+            "mainClass": [
+                
+            ]
+        },
+        "resolution": {
+            "modules": [
+                {
+                    "organization": "org.scala-lang",
+                    "name": "scala-library",
+                    "version": "2.13.3",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "scala-library",
+                            "path": "/home/gil/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.3/scala-library-2.13.3.jar"
+                        },
+                        {
+                            "name": "scala-library",
+                            "classifier": "sources",
+                            "path": "/home/gil/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.3/scala-library-2.13.3-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.scala-lang.modules",
+                    "name": "scala-parser-combinators_2.13",
+                    "version": "1.1.2",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "scala-parser-combinators_2.13",
+                            "path": "/home/gil/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/modules/scala-parser-combinators_2.13/1.1.2/scala-parser-combinators_2.13-1.1.2.jar"
+                        },
+                        {
+                            "name": "scala-parser-combinators_2.13",
+                            "classifier": "sources",
+                            "path": "/home/gil/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/modules/scala-parser-combinators_2.13/1.1.2/scala-parser-combinators_2.13-1.1.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.scala-lang",
+                    "name": "scala-library",
+                    "version": "2.13.3",
+                    "configurations": "optional",
+                    "artifacts": [
+                        {
+                            "name": "scala-library",
+                            "path": "/home/gil/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.3/scala-library-2.13.3.jar"
+                        },
+                        {
+                            "name": "scala-library",
+                            "classifier": "sources",
+                            "path": "/home/gil/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.3/scala-library-2.13.3-sources.jar"
+                        }
+                    ]
+                }
+            ]
+        },
+        "tags": [
+            "test"
+        ]
+    }
+}

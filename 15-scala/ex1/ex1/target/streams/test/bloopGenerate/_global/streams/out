@@ -1,0 +1,4 @@
+[debug] [ex1-test] Classpath dependencies List()
+[debug] [ex1-test] Dependencies from configurations List(ex1)
+[debug] Bloop wrote the configuration of project 'ex1-test' to '/home/gil/homebrew/repos/advent-of-code-2020/15-scala/ex1/ex1/.bloop/ex1-test.json'
+[success] Generated .bloop/ex1-test.json
