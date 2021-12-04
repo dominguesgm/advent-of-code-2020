@@ -2,7 +2,6 @@
 
 Similarly to last year (which didn't last very long), I'll be trying to complete this year's Advent of Code using a different language each day.
 
-
 ## Language List
 
 1. Clojure
@@ -31,3 +30,7 @@ Similarly to last year (which didn't last very long), I'll be trying to complete
 24. JS
 25. C#
 26. Lua
+
+## Package management
+
+I used [asdf](https://asdf-vm.com/) to ease the installation and set up of each language's development environment.
