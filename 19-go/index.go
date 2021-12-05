@@ -17,7 +17,7 @@ func countValidMessages(program Program) int {
 }
 
 func main() {
-    program := readFile("tiny_data2_replaced.txt")
+    program := readFile("data_replaced.txt")
 
 	count := countValidMessages(program)
 

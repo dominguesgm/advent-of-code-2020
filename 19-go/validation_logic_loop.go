@@ -19,13 +19,14 @@ func runInstructionSegmentLoop(segment InstructionSegment, message string, instr
 	if segment.value != "" {
 		if segment.value == string(message[0]) {
 			analysisList = append(analysisList, AnalysisSubject{matchesSoFar: true, messageLeftToAnalyze: message[1:]})
-		} 
+		}
 		return analysisList
 	}
 
 	analysisList = append(analysisList, AnalysisSubject{matchesSoFar: true, messageLeftToAnalyze: message})
 	
 	for _, instructionAddress := range segment.sequence {
+
 		tempAnalysisList := []AnalysisSubject{}
 		for _, analysisItem := range analysisList {
 			resultList := runInstructionLoop(instructions[instructionAddress], analysisItem.messageLeftToAnalyze, instructions)
@@ -35,11 +36,11 @@ func runInstructionSegmentLoop(segment InstructionSegment, message string, instr
 			}
 		}
 
+		analysisList = tempAnalysisList
+
 		if len(tempAnalysisList) == 0 {
 			return analysisList
 		}
-
-		analysisList = tempAnalysisList
 	}
 
 	return analysisList
@@ -48,11 +49,11 @@ func runInstructionSegmentLoop(segment InstructionSegment, message string, instr
 func runInstructionLoop(instruction Instruction, message string, instructions map[string]Instruction) []AnalysisSubject {
 	matchingList := []AnalysisSubject{}
 	for _, segments := range instruction.segments {
-		resultList := runInstructionSegmentLoop(segments, message, instructions, MAX_DEPTH)
+		resultList := runInstructionSegmentLoop(segments, message, instructions)
 
 		for _, resultItem := range resultList {
 			if resultItem.matchesSoFar {
-				matchingList = append(matchingList, AnalysisSubject{matchesSoFar: true, messageLeftToAnalyze: resultItem.messageLeftToAnalyze})
+				matchingList = append(matchingList, resultItem)
 			}
 		}
 	}
@@ -64,7 +65,7 @@ func isMessageValidLoop(instructions map[string]Instruction, message string) boo
 	initialInstruction := instructions["0"]
 
 
-	resultList := runInstructionLoop(initialInstruction, message, instructions, MAX_DEPTH)
+	resultList := runInstructionLoop(initialInstruction, message, instructions)
 	isMatch := false
 
 	for _, match := range resultList {
