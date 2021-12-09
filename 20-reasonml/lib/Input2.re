@@ -1,7 +1,7 @@
 open Types
 
 let readPieces = (): array(piece2) => {
-    let file_in_channel = Stdlib.open_in("tiny_data.txt");
+    let file_in_channel = Stdlib.open_in("data.txt");
 
     let file_stream =
         Stream.from(_i => {

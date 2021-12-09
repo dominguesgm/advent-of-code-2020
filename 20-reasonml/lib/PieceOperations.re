@@ -51,6 +51,7 @@ let flipHorizontalPiece = (currPiece: piece2) => {
     {...currPiece, opposingEdges: flipHorizontalArray(currPiece.opposingEdges), matrix: flipHorizontalMatrix(currPiece.matrix)}
 }
 
+
 let rec flipVerticalMatrix = (matrix: array(string)) => {
     matrix |> Array.map((elem) => elem |> reverse);
 }
@@ -81,11 +82,9 @@ let changePieceRight = (piece: piece2, instructions: pieceMatchingInstructions) 
 let changePieceBottom = (piece: piece2, instructions: pieceMatchingInstructions) => {
     let needToFlip = instructions.flip != (instructions.rotate <= 2)
 
-    Console.log("pre-rotate");
     let rotatedPiece = Array.make(instructions.rotate, 0) |> Array.fold_left((acc, elem) => {
         acc |> rotatePiece;
     }, piece);
-    Console.log("post-rotate");
 
-    needToFlip ? flipHorizontalPiece(rotatedPiece) : rotatedPiece;
+    needToFlip ? flipVerticalPiece(rotatedPiece) : rotatedPiece;
 }

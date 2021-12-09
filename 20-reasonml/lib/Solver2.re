@@ -1,6 +1,7 @@
 open Types;
 open PieceOperations;
 
+let max_width = 12;
 
 let sortUsages = (pieces: array(piece2)) => {
     pieces |> Array.fold_left((acc, elem) => {
@@ -62,9 +63,7 @@ let matchPieceToLeftEdge = (leftPiece, piecesLeft) => {
         }
     }, initialState);
 
-    Console.log(Array.length(piecesLeft))
     let newPiecesLeft = removeFoundPiece(foundPiece.piece, piecesLeft);
-    Console.log(Array.length(newPiecesLeft));
 
     let updatedPiece = changePieceRight(foundPiece.piece, foundPiece.instructions);
 
@@ -91,9 +90,7 @@ let matchPieceToTopEdge = (topPiece, piecesLeft) => {
 
     }, {piece: topPiece, instructions: {found: false, rotate: 0, flip: false}, found: false});
 
-    Console.log(Array.length(piecesLeft))
     let newPiecesLeft = removeFoundPiece(foundPiece.piece, piecesLeft);
-    Console.log(Array.length(newPiecesLeft));
 
     let updatedPiece = changePieceBottom(foundPiece.piece, foundPiece.instructions);
 
@@ -101,7 +98,8 @@ let matchPieceToTopEdge = (topPiece, piecesLeft) => {
 }
 
 let assemblePuzzle = (firstCorner, piecesLeft) => {
-    let width = 3;
+    /* let width = 3; for tiny data*/ 
+    let width = max_width;
 
     let heightLeft = width-1;
 
@@ -109,8 +107,6 @@ let assemblePuzzle = (firstCorner, piecesLeft) => {
         let leftPiece = acc.firstLine[Array.length(acc.firstLine) - 1];
 
         let matchingResult = matchPieceToLeftEdge(leftPiece, acc.piecesLeft);
-
-        Console.log(matchingResult.piece);
 
         {firstLine: Array.append(acc.firstLine, [| matchingResult.piece |]), piecesLeft: matchingResult.piecesLeft}
     }, {firstLine: [|firstCorner|], piecesLeft: piecesLeft});
@@ -133,17 +129,85 @@ let assemblePuzzle = (firstCorner, piecesLeft) => {
     puzzleMatrixAcc.puzzleMatrix
 }
 
+
+let printBorderedCanvas = (pieces: array(array(piece2))) => {
+    pieces |> Array.iter((row) => {
+        Array.init(10, (index) => index ) |> Array.iter((index) => {
+          let rowLine = row |> Array.fold_left((accString, piece) => {
+            accString ++ " " ++ String.sub(piece.matrix[index], 0, 10);
+          }, "");
+          Console.log(rowLine);
+        });
+        Console.log("");
+      });
+}
+
 let assemblePuzzleMatrixNoBorders = (pieces: array(array(piece2))) => {
     pieces |> Array.fold_left((matrixAcc, row) => {
-        let rowArray = Array.init(10, (index) => index) |> Array.fold_left((accRow, index) => {
+        let rowArray = Array.init(8, (index) => index + 1) |> Array.fold_left((accRow, index) => {
           let rowLine = row |> Array.fold_left((accString, piece) => {
             accString ++ String.sub(piece.matrix[index], 1, 8);
           }, "");
-          Console.log(rowLine);
+          /* Console.log(rowLine); */
           Array.append(accRow, [| rowLine |]);
         }, [||]);
         Array.append(matrixAcc, rowArray);
       }, [||]);
+}
+
+let findDragons = (canvas: array(string)) => {
+    /* Array.init(24-3, (index) => index) |> Array.fold_left((acc, yIndex) => {
+        Array.init(4, (index) => index) |> Array.fold_left((accT, xIndex) => {  sizes for tiny data*/
+    Array.init((max_width * 8) - 3, (index) => index) |> Array.fold_left((acc, yIndex) => {
+        Array.init((max_width * 8) - 20, (index) => index) |> Array.fold_left((accT, xIndex) => {
+            if(
+                canvas[yIndex + 0].[xIndex + 18] == '#' &&
+                canvas[yIndex + 1].[xIndex + 0] == '#' &&
+                canvas[yIndex + 1].[xIndex + 5] == '#' &&
+                canvas[yIndex + 1].[xIndex + 6] == '#' &&
+                canvas[yIndex + 1].[xIndex + 11] == '#' &&
+                canvas[yIndex + 1].[xIndex + 12] == '#' &&
+                canvas[yIndex + 1].[xIndex + 17] == '#' &&
+                canvas[yIndex + 1].[xIndex + 18] == '#' &&
+                canvas[yIndex + 1].[xIndex + 19] == '#' &&
+                canvas[yIndex + 2].[xIndex + 1] == '#' &&
+                canvas[yIndex + 2].[xIndex + 4] == '#' &&
+                canvas[yIndex + 2].[xIndex + 7] == '#' &&
+                canvas[yIndex + 2].[xIndex + 10] == '#' &&
+                canvas[yIndex + 2].[xIndex + 13] == '#' &&
+                canvas[yIndex + 2].[xIndex + 16] == '#'
+            ) {
+                accT + 1;
+            } else {
+                accT;
+            }
+        }, acc);
+    }, 0);
+}
+
+let checkForDragonsAndChangePuzzle = (canvas: array(string)) => {
+    let changedCanvas = canvas;
+
+    let maxVal = Stdlib.max(0, findDragons(changedCanvas));
+    let changedCanvas = rotateMatrix(canvas);
+    let maxVal = Stdlib.max(maxVal, findDragons(changedCanvas));
+    let changedCanvas = rotateMatrix(changedCanvas);
+    let maxVal = Stdlib.max(maxVal, findDragons(changedCanvas));
+    let changedCanvas = rotateMatrix(changedCanvas);
+    let maxVal = Stdlib.max(maxVal, findDragons(changedCanvas));
+
+    let changedCanvas = rotateMatrix(changedCanvas);
+    
+    let changedCanvas = flipHorizontalMatrix(changedCanvas);
+    let maxVal = Stdlib.max(maxVal, findDragons(changedCanvas));
+    let changedCanvas = rotateMatrix(changedCanvas);
+    let maxVal = Stdlib.max(maxVal, findDragons(changedCanvas));
+    let changedCanvas = rotateMatrix(changedCanvas);
+    let maxVal = Stdlib.max(maxVal, findDragons(changedCanvas));
+    let changedCanvas = rotateMatrix(changedCanvas);
+    let maxVal = Stdlib.max(maxVal, findDragons(changedCanvas));
+
+    maxVal;
 }
 
 let solver = (pieces: array(piece2)) => {
@@ -168,7 +232,22 @@ let solver = (pieces: array(piece2)) => {
 
     let puzzle = assemblePuzzle(firstCorner, piecesWithoutFirst);
 
-    Console.log(assemblePuzzleMatrixNoBorders(puzzle));
+    let assembledAndTrimmedPuzzle = assemblePuzzleMatrixNoBorders(puzzle);
 
-    puzzle;
+    let maxNum = checkForDragonsAndChangePuzzle(assembledAndTrimmedPuzzle);
+
+    printBorderedCanvas(puzzle);
+    assembledAndTrimmedPuzzle |> Array.iter(Console.log);
+
+    Console.log(maxNum);
+
+    let countHash = assembledAndTrimmedPuzzle |> Array.fold_left((acc, line) => {
+        Array.init(String.length(line), (i) => i) |> Array.fold_left((accT, index) => {
+            line.[index] == '#' ? accT + 1 : accT;
+        }, acc);
+    }, 0);
+
+    let dragonSize = 15;
+
+    countHash - (dragonSize * maxNum);
 }

@@ -8,9 +8,9 @@ let reverse = str => {
 let flattenArray = (arr: array(array('a))): array('a) =>
   Array.(concat(to_list(arr)));
 
-let sortUsages = (pieces: array(piece)) => {
+let sortUsages = (pieces: array(piece2)) => {
     pieces |> Array.fold_left((acc, elem) => {
-        elem.opposingEdges |> flattenArray |> Array.fold_left((accT, elemT) => {
+        elem.opposingEdges |> Array.fold_left((accT, elemT) => {
             switch(elemT) {
             | x when EdgeMap.mem(x, acc) => {
                 EdgeMap.add(x, EdgeMap.find(x, accT) + 1, accT)
@@ -36,12 +36,12 @@ let checkMissingEdgeUse = (usages, acc, elem) => {
     }
 }
 
-let solver1 = (pieces: array(piece)) => {
+let solver1 = (pieces: array(piece2)) => {
     let usages = sortUsages(pieces);
 
     pieces |> Array.fold_left((acc, elem) => {
-        let missingNorthSouth = elem.opposingEdges[0] |> Array.fold_left(checkMissingEdgeUse(usages), false)
-        let missingEastWest = elem.opposingEdges[1] |> Array.fold_left(checkMissingEdgeUse(usages), false)
+        let missingNorthSouth = [| elem.opposingEdges[0], elem.opposingEdges[2] |] |> Array.fold_left(checkMissingEdgeUse(usages), false)
+        let missingEastWest = [| elem.opposingEdges[1], elem.opposingEdges[3] |] |> Array.fold_left(checkMissingEdgeUse(usages), false)
 
         if(missingNorthSouth && missingEastWest) {
             acc * elem.id;
