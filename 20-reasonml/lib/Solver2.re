@@ -1,7 +1,7 @@
 open Types;
 open PieceOperations;
-
-let max_width = 12;
+open PuzzleAssembly;
+open MonsterDetection;
 
 let sortUsages = (pieces: array(piece2)) => {
     pieces |> Array.fold_left((acc, elem) => {
@@ -31,188 +31,19 @@ let checkMissingEdgeUseFolding = (usages, acc, elem) => {
     }
 }
 
-let checkMissingEdgeUse = (usages, element) => {
-    (EdgeMap.mem(element, usages) && EdgeMap.find(element, usages) == 1) ||
-        (EdgeMap.mem(element |> reverse, usages) && EdgeMap.find(element |> reverse, usages) == 1)
-}
-
-
-
-let removeFoundPiece = (piece, list) => list |> Array.fold_left((acc, elem) => {
-    elem == piece ? acc : Array.append(acc, [|elem|]);
-}, [||])
-
-
-let matchPieceToLeftEdge = (leftPiece, piecesLeft) => {
-    let initialState = {piece: leftPiece, instructions: {found: false, rotate: 0, flip: false}, found: false};
-    
-    let foundPiece = piecesLeft |> Array.fold_left((acc, elem) => {
-        if(acc.found) {
-            acc;
-        }else {
-            let foundEdge = elem.opposingEdges |> Array.fold_left((accT, elemT) => {
-                switch(elemT){
-                | x when x == leftPiece.opposingEdges[1] => {found: true, rotate: accT.rotate, flip: false}
-                | x when x == reverse(leftPiece.opposingEdges[1]) => {found: true, rotate: accT.rotate, flip: true}
-                | _ when accT.found == false => {found: false, rotate: accT.rotate - 1, flip: false}
-                | _ => {found: true, rotate: accT.rotate, flip: accT.flip}
-                }
-            }, {found: false, rotate: 3, flip: false});
-    
-            foundEdge.found ? {piece: elem, instructions: foundEdge, found: true} : acc;
-        }
-    }, initialState);
-
-    let newPiecesLeft = removeFoundPiece(foundPiece.piece, piecesLeft);
-
-    let updatedPiece = changePieceRight(foundPiece.piece, foundPiece.instructions);
-
-    {piece: updatedPiece, piecesLeft: newPiecesLeft};
-}
-
-let matchPieceToTopEdge = (topPiece, piecesLeft) => {
-    let foundPiece = piecesLeft |> Array.fold_left((acc, elem) => {
-        if(acc.found) {
-            acc;
-        } else {
-            let foundEdge = elem.opposingEdges |> Array.fold_left((accT, elemT) => {
-                switch(elemT){
-                | x when x == topPiece.opposingEdges[2] => {found: true, rotate: accT.rotate, flip: false}
-                | x when x == reverse(topPiece.opposingEdges[2]) => {found: true, rotate: accT.rotate, flip: true}
-                | _ when accT.found == false => {found: false, rotate: accT.rotate - 1, flip: false}
-                | _ => {found: true, rotate: accT.rotate, flip: accT.flip}
-                }
-            }, {found: false, rotate: 4, flip: false});
-    
-            foundEdge.found ? {piece: elem, instructions: foundEdge, found: true} : acc;
-        }
-
-
-    }, {piece: topPiece, instructions: {found: false, rotate: 0, flip: false}, found: false});
-
-    let newPiecesLeft = removeFoundPiece(foundPiece.piece, piecesLeft);
-
-    let updatedPiece = changePieceBottom(foundPiece.piece, foundPiece.instructions);
-
-    {piece: updatedPiece, piecesLeft: newPiecesLeft};
-}
-
-let assemblePuzzle = (firstCorner, piecesLeft) => {
-    /* let width = 3; for tiny data*/ 
-    let width = max_width;
-
-    let heightLeft = width-1;
-
-    let firstLineAcc = Array.make(width-1, 0) |> Array.fold_left((acc, _) => {
-        let leftPiece = acc.firstLine[Array.length(acc.firstLine) - 1];
-
-        let matchingResult = matchPieceToLeftEdge(leftPiece, acc.piecesLeft);
-
-        {firstLine: Array.append(acc.firstLine, [| matchingResult.piece |]), piecesLeft: matchingResult.piecesLeft}
-    }, {firstLine: [|firstCorner|], piecesLeft: piecesLeft});
-
-    let puzzleMatrixAcc = Array.make(heightLeft, 0) |> Array.fold_left((acc, _) => {
-        let topPiece = acc.puzzleMatrix[Array.length(acc.puzzleMatrix) - 1][0];
-
-        let firstMatchingResult = matchPieceToTopEdge(topPiece, acc.piecesLeft);
-
-        let lineAcc = Array.make(width-1, 0) |> Array.fold_left((accT, _) => {
-            let leftPiece = accT.firstLine[Array.length(accT.firstLine) - 1];
-    
-            let matchingResult = matchPieceToLeftEdge(leftPiece, accT.piecesLeft);
-            {firstLine: Array.append(accT.firstLine, [| matchingResult.piece |]), piecesLeft: matchingResult.piecesLeft}
-        }, {firstLine: [|firstMatchingResult.piece|], piecesLeft: firstMatchingResult.piecesLeft});
-
-        {puzzleMatrix: Array.append(acc.puzzleMatrix, [| lineAcc.firstLine |]), piecesLeft: lineAcc.piecesLeft};
-    }, {puzzleMatrix: [| firstLineAcc.firstLine |], piecesLeft: firstLineAcc.piecesLeft})
-
-    puzzleMatrixAcc.puzzleMatrix
-}
-
-
-let printBorderedCanvas = (pieces: array(array(piece2))) => {
-    pieces |> Array.iter((row) => {
-        Array.init(10, (index) => index ) |> Array.iter((index) => {
-          let rowLine = row |> Array.fold_left((accString, piece) => {
-            accString ++ " " ++ String.sub(piece.matrix[index], 0, 10);
-          }, "");
-          Console.log(rowLine);
-        });
-        Console.log("");
-      });
-}
-
-let assemblePuzzleMatrixNoBorders = (pieces: array(array(piece2))) => {
-    pieces |> Array.fold_left((matrixAcc, row) => {
-        let rowArray = Array.init(8, (index) => index + 1) |> Array.fold_left((accRow, index) => {
-          let rowLine = row |> Array.fold_left((accString, piece) => {
-            accString ++ String.sub(piece.matrix[index], 1, 8);
-          }, "");
-          /* Console.log(rowLine); */
-          Array.append(accRow, [| rowLine |]);
-        }, [||]);
-        Array.append(matrixAcc, rowArray);
-      }, [||]);
-}
-
-let findDragons = (canvas: array(string)) => {
-    /* Array.init(24-3, (index) => index) |> Array.fold_left((acc, yIndex) => {
-        Array.init(4, (index) => index) |> Array.fold_left((accT, xIndex) => {  sizes for tiny data*/
-    Array.init((max_width * 8) - 3, (index) => index) |> Array.fold_left((acc, yIndex) => {
-        Array.init((max_width * 8) - 20, (index) => index) |> Array.fold_left((accT, xIndex) => {
-            if(
-                canvas[yIndex + 0].[xIndex + 18] == '#' &&
-                canvas[yIndex + 1].[xIndex + 0] == '#' &&
-                canvas[yIndex + 1].[xIndex + 5] == '#' &&
-                canvas[yIndex + 1].[xIndex + 6] == '#' &&
-                canvas[yIndex + 1].[xIndex + 11] == '#' &&
-                canvas[yIndex + 1].[xIndex + 12] == '#' &&
-                canvas[yIndex + 1].[xIndex + 17] == '#' &&
-                canvas[yIndex + 1].[xIndex + 18] == '#' &&
-                canvas[yIndex + 1].[xIndex + 19] == '#' &&
-                canvas[yIndex + 2].[xIndex + 1] == '#' &&
-                canvas[yIndex + 2].[xIndex + 4] == '#' &&
-                canvas[yIndex + 2].[xIndex + 7] == '#' &&
-                canvas[yIndex + 2].[xIndex + 10] == '#' &&
-                canvas[yIndex + 2].[xIndex + 13] == '#' &&
-                canvas[yIndex + 2].[xIndex + 16] == '#'
-            ) {
-                accT + 1;
-            } else {
-                accT;
-            }
+let countHashesInMap = (puzzle: array(string)) => {
+    puzzle |> Array.fold_left((acc, line) => {
+        Array.init(String.length(line), (i) => i) |> Array.fold_left((accT, index) => {
+            line.[index] == '#' ? accT + 1 : accT;
         }, acc);
     }, 0);
-}
-
-let checkForDragonsAndChangePuzzle = (canvas: array(string)) => {
-    let changedCanvas = canvas;
-
-    let maxVal = Stdlib.max(0, findDragons(changedCanvas));
-    let changedCanvas = rotateMatrix(canvas);
-    let maxVal = Stdlib.max(maxVal, findDragons(changedCanvas));
-    let changedCanvas = rotateMatrix(changedCanvas);
-    let maxVal = Stdlib.max(maxVal, findDragons(changedCanvas));
-    let changedCanvas = rotateMatrix(changedCanvas);
-    let maxVal = Stdlib.max(maxVal, findDragons(changedCanvas));
-
-    let changedCanvas = rotateMatrix(changedCanvas);
-    
-    let changedCanvas = flipHorizontalMatrix(changedCanvas);
-    let maxVal = Stdlib.max(maxVal, findDragons(changedCanvas));
-    let changedCanvas = rotateMatrix(changedCanvas);
-    let maxVal = Stdlib.max(maxVal, findDragons(changedCanvas));
-    let changedCanvas = rotateMatrix(changedCanvas);
-    let maxVal = Stdlib.max(maxVal, findDragons(changedCanvas));
-    let changedCanvas = rotateMatrix(changedCanvas);
-    let maxVal = Stdlib.max(maxVal, findDragons(changedCanvas));
-
-    maxVal;
-}
+};
 
 let solver = (pieces: array(piece2)) => {
+    /* Find how many times each edge is used, store it in hashmap */
     let usages = sortUsages(pieces);
 
+    /* Find the first piece with two unused edges */
     let firstTile = pieces |> Array.to_list |> List.find((elem) => {
         let missingNorthSouth = [| elem.opposingEdges[0], elem.opposingEdges[2] |] |> Array.fold_left(checkMissingEdgeUseFolding(usages), false)
         let missingEastWest = [| elem.opposingEdges[1], elem.opposingEdges[3] |] |> Array.fold_left(checkMissingEdgeUseFolding(usages), false)
@@ -220,34 +51,29 @@ let solver = (pieces: array(piece2)) => {
         missingNorthSouth && missingEastWest
     });
     
-    let piecesWithoutFirst = pieces |> Array.fold_left((acc, elem) => {
+    /* Create an array of pieces without the first piece selected */
+    let piecesLeft = pieces |> Array.fold_left((acc, elem) => {
         elem == firstTile ? acc : Array.append(acc, [|elem|]);
     }, [||])
 
-    let firstCorner = Array.make(3, 0) |> Array.fold_left((acc, _) => {
-        let missingNorth = acc.opposingEdges[0] |> checkMissingEdgeUse(usages);
-        let missingEast = acc.opposingEdges[3] |> checkMissingEdgeUse(usages);
+    /* Rotate and flip first piece selected to fit top left corner */
+    let alignedFirstCorner = Array.make(3, 0) |> Array.fold_left((acc, _) => {
+        let missingNorth = acc.opposingEdges[0] |> checkMissingEdgeUseFolding(usages, false);
+        let missingEast = acc.opposingEdges[3] |> checkMissingEdgeUseFolding(usages, false);
         missingNorth && missingEast ? acc : rotatePiece(acc);
     }, firstTile);
 
-    let puzzle = assemblePuzzle(firstCorner, piecesWithoutFirst);
+    /* Build puzzle starting from top left corner */
+    let puzzle = assemblePuzzle(alignedFirstCorner, piecesLeft);
 
+    /* Remove borders from each piece and connect puzzle */
     let assembledAndTrimmedPuzzle = assemblePuzzleMatrixNoBorders(puzzle);
 
-    let maxNum = checkForDragonsAndChangePuzzle(assembledAndTrimmedPuzzle);
-
-    printBorderedCanvas(puzzle);
-    assembledAndTrimmedPuzzle |> Array.iter(Console.log);
-
-    Console.log(maxNum);
-
-    let countHash = assembledAndTrimmedPuzzle |> Array.fold_left((acc, line) => {
-        Array.init(String.length(line), (i) => i) |> Array.fold_left((accT, index) => {
-            line.[index] == '#' ? accT + 1 : accT;
-        }, acc);
-    }, 0);
-
+    /* Find number of monsters, rotating and flipping map if necessary */
+    let numberOfMonsters = checkForDragons(assembledAndTrimmedPuzzle);
+    
+    let countHash = countHashesInMap(assembledAndTrimmedPuzzle);
     let dragonSize = 15;
 
-    countHash - (dragonSize * maxNum);
+    countHash - (dragonSize * numberOfMonsters);
 }

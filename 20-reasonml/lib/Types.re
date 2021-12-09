@@ -1,3 +1,5 @@
+let max_width = 12;
+
 type piece = {
     id: int,
     opposingEdges: array(array(string)),
